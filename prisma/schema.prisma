@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  userId    String   @unique @map("user_id")
+  name      String
+  cycle     Cycle    @default(MONTHLY)
+  currency  String
+  price     Decimal  @db.Decimal(9, 2)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("subscriptions")
+}
+
+enum Cycle {
+  MONTHLY
+  YEARLY
+}
