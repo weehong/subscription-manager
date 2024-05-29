@@ -1,8 +1,12 @@
 "use client";
 
+import { Dispatch, SetStateAction } from "react";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
+import { z } from "zod";
 
+import { formSchema } from "@/app/subscriptions/validation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,15 +17,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/lib/utils";
+import { Subscription } from "@/types";
+import { deleteData } from "./helper";
 
-export type Subscription = {
-  id: string;
-  name: string;
-  currency: string;
-  price: number;
+type SubscriptionColumnProps = {
+  mutate: () => void;
+  setIsEdit: (value: boolean) => void;
+  setFormValues: (value: z.infer<typeof formSchema>) => void;
 };
 
-export const columns: ColumnDef<Subscription>[] = [
+export const columns = ({
+  mutate,
+  setIsEdit,
+  setFormValues,
+}: SubscriptionColumnProps): ColumnDef<Subscription>[] => [
   {
     accessorKey: "id",
     header: "#",
@@ -31,26 +40,31 @@ export const columns: ColumnDef<Subscription>[] = [
     header: "Name",
   },
   {
-    accessorKey: "currency",
-    header: "Currency",
+    accessorKey: "cycle",
+    header: "Cycle",
+    cell: ({ row }) => (
+      <>
+        <span className="capitalize">{row.original.cycle.toLowerCase()}</span>
+      </>
+    ),
   },
   {
     accessorKey: "price",
     header: "Price",
     cell: ({ row }) => (
-      <>
-        <span className="mr-6">{row.original.currency}</span>
+      <div className="flex flex-col">
+        <span>{row.original.currency}</span>
         <span className="font-ibm-plex-mono">
           {formatCurrency(row.original.currency, row.original.price)}
         </span>
-      </>
+      </div>
     ),
   },
   {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const subscription = row.original;
 
       return (
         <DropdownMenu>
@@ -63,13 +77,34 @@ export const columns: ColumnDef<Subscription>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => {
+                setIsEdit(true);
+                setFormValues({
+                  id: parseInt(subscription!.id!),
+                  name: subscription.name,
+                  cycle: subscription.cycle,
+                  currency: subscription.currency,
+                  price: subscription.price,
+                });
+              }}
             >
-              Copy payment ID
+              Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={async () => {
+                const res = await deleteData(
+                  `/api/subscriptions/${subscription.id!}`
+                );
+                if (res.ok) {
+                  mutate();
+                }
+              }}
+              className="text-red-500"
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

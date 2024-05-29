@@ -1,5 +1,11 @@
 import { create } from "zustand";
 
+type UserProp = {
+  id: string;
+  name: string;
+  currency: string;
+};
+
 type UserStateProp = {
   user: UserProp;
   updateUser: (user: UserProp) => void;
@@ -7,15 +13,11 @@ type UserStateProp = {
   updateCurrency: (currency: string) => void;
 };
 
-type UserProp = {
-  name: string;
-  currency: string;
-};
-
-export const useProfileStore = create<UserStateProp>((set) => ({
+export const useProfileStore = create<UserStateProp>()((set) => ({
   user: {
-    name: "Wee Hong KOH",
-    currency: "SGD",
+    id: "",
+    name: "",
+    currency: "",
   },
   updateUser: (newUser) => set({ user: newUser }),
   updateName: (newName) =>

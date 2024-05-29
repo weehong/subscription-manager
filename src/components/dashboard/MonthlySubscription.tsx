@@ -10,7 +10,9 @@ export default function MonthlySubscription() {
   const [monthlyBudget, setMonthlyBudget] = useState("");
 
   useEffect(() => {
-    setMonthlyBudget(formatCurrency(currency, Number.MAX_SAFE_INTEGER));
+    setMonthlyBudget(
+      formatCurrency(currency || "SGD", Number.MAX_SAFE_INTEGER)
+    );
   }, [currency]);
 
   return (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import "@/styles/globals.css";
 
-import Nav from "@/components/Nav";
+import Nav from "@/components/common/Nav";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 export const metadata: Metadata = {

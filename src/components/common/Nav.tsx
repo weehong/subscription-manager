@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -29,7 +29,8 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 
 import { cn, isPathMatch } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import Loader from "./common/Loader";
+import Loader from "./Loader";
+import { useProfileStore } from "@/app/store/profile";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
@@ -199,7 +200,7 @@ export default function Nav({ children }: { children: ReactNode }) {
         </div>
 
         <div className="lg:pl-72">
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <div className="bg-white sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
             <button
               type="button"
               className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
@@ -232,7 +233,7 @@ export default function Nav({ children }: { children: ReactNode }) {
                 />
 
                 {/* Profile dropdown */}
-                <Menu as="div" className="relative min-w-[120px]">
+                <Menu as="div" className="relative lg:min-w-[120px]">
                   {isLoading ? (
                     <div className="flex justify-center items-center">
                       <Loader />
